@@ -1,0 +1,25 @@
+{
+  "name": "recurly-rescue",
+  "version": "1.0.0",
+  "description": "CLI tool to recover subscriptions closed by dunning bot via Recurly API v3",
+  "main": "rescue.js",
+  "scripts": {
+    "start": "node rescue.js",
+    "test": "node --test"
+  },
+  "keywords": [
+    "recurly",
+    "rescue",
+    "subscription",
+    "cli"
+  ],
+  "author": "Gtko",
+  "license": "ISC",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "js-yaml": "^4.1.1"
+  }
+}

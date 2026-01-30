@@ -1,0 +1,28 @@
+# Environment files with secrets
+.env
+
+# Dependencies
+node_modules/
+
+# Output files
+rescue-results-*.json
+rescue-state-*.json
+rollback-results-*.json
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+*.log
+npm-debug.log*
+
+# Auto Claude data directory
+.auto-claude/
+.claude_settings.json
