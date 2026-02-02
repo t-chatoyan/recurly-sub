@@ -28,6 +28,52 @@ const { rescueClient, getSubscriptionInvoices, getAccountInvoices, getAccountLin
 const { createExecutionController, getConfirmationInterval, displayConfirmationInfo } = require('./src/rescue/execution-control');
 const { setDryRunMode } = require('./src/rescue/dry-run');
 
+/** Account IDs to exclude from resubscribe (edit this array as needed) */
+const EXCLUDE_ACCOUNT_IDS = [
+  "cus_prod_254774_UvygY68z",
+  "cus_prod_255016_3ZxVcdYe",
+  "cus_prod_255350_jOZkJw3q",
+
+  "cus_prod_256299_xmjcTUBD",
+  "cus_prod_257021_Od4mpEjP",
+  "cus_prod_257059_DcLNhgD6",
+  "cus_prod_257222_atGnKQza",
+  "cus_prod_257257_cBykppCT",
+  "cus_prod_257312_Y7jGIYKG",
+  "cus_prod_257515_HMH2Cpj4",
+  "cus_prod_16479_UQTpK9LW",
+  "cus_prod_258275_ZQP7F07s",
+  "cus_prod_258553_4YgLBvS1",
+  "cus_prod_257230_CBDqQDkk",
+  "cus_prod_258182_Mb8D1KDt",
+  "cus_prod_259854_EfSszWCN",
+  "cus_prod_260304_jzn5eXjq",
+  "cus_prod_261538_zg7vxcvn",
+  "cus_prod_261599_KC8o4Li0",
+  "cus_prod_261815_HBJ4BuWR",
+  "cus_prod_261867_bu6XZJ2G",
+  "cus_prod_261888_gCB914Gx",
+  "cus_prod_262300_4XR5DQQA",
+  "cus_prod_262315_9GL6FkWm",
+  "cus_prod_262526_bi16uPu2",
+  "cus_prod_263141_Bgn5KHau",
+  "cus_prod_263173_u6FBWsEc",
+  "cus_prod_263204_ZnqT0LWC",
+  "cus_prod_264228_PnDCPCxU",
+  "cus_prod_264694_8wCOUfzx",
+  "cus_prod_264694_8wCOUfzx",
+  "cus_prod_265541_lUWL871N",
+  "cus_prod_265747_pTYYHSPE",
+  "cus_prod_265956_9tI3xRh7",
+  "cus_prod_266254_Y5WvH024",
+  "cus_prod_266254_Y5WvH024",
+  "cus_prod_266384_ljlyjjkA",
+  "cus_prod_266782_09i1t1QI",
+  "cus_prod_266858_yxlJ52RG",
+  "cus_prod_267073_Id43U0yX",
+
+];
+
 /**
  * Main entry point
  * Parses arguments, loads configuration, and initializes the rescue process
@@ -473,6 +519,26 @@ async function main() {
         if (options.limit && accounts.length > options.limit) {
           console.log(`Limiting to ${options.limit} of ${accounts.length} accounts${options.random ? ' (random selection)' : ''}`);
           accounts = accounts.slice(0, options.limit);
+        }
+      }
+
+      // Filter out excluded account IDs (no resubscribe for these)
+      if (EXCLUDE_ACCOUNT_IDS.length > 0) {
+        const excludeSet = new Set(EXCLUDE_ACCOUNT_IDS.map(id => String(id).trim().toLowerCase()));
+        const beforeExclude = accounts.length;
+        accounts = accounts.filter(a => {
+          const code = (a.code || a.id || '').toString().trim();
+          const id = (a.id || a.code || '').toString().trim();
+          const inExclude = excludeSet.has(code.toLowerCase()) || excludeSet.has(id.toLowerCase());
+          return !inExclude;
+        });
+        const excluded = beforeExclude - accounts.length;
+        if (excluded > 0) {
+          console.log(`Excluded ${excluded} account(s)`);
+        }
+        if (accounts.length === 0) {
+          console.log('No accounts remaining after exclusions.');
+          process.exit(0);
         }
       }
 
